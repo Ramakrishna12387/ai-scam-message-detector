@@ -5,59 +5,116 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard - AI Scam Detector</title>
     <script>
-        // Check if user is logged in
         if (!sessionStorage.getItem("user")) {
             window.location.href = "index.html";
         }
     </script>
     <style>
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, sans-serif; }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
         body { background: linear-gradient(135deg, #0f172a, #1e293b); color: #f8fafc; min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 20px; }
-        .card { width: 100%; max-width: 800px; background: rgba(30, 41, 59, 0.85); backdrop-filter: blur(16px); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 20px; padding: 35px; }
-        .header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #334155; padding-bottom: 15px; margin-bottom: 20px; }
-        textarea { width: 100%; height: 130px; background: #0f172a; border: 1.5px solid #334155; border-radius: 10px; padding: 14px; color: #fff; outline: none; margin-top: 8px; }
-        .actions { display: flex; gap: 10px; margin-top: 15px; }
-        button { flex: 1; padding: 13px; border: none; border-radius: 8px; font-weight: 600; cursor: pointer; }
-        .btn-check { background: #0284c7; color: #fff; }
+        .card { width: 100%; max-width: 750px; background: rgba(30, 41, 59, 0.9); backdrop-filter: blur(16px); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 20px; padding: 35px; box-shadow: 0 25px 50px rgba(0,0,0,0.5); }
+        .header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #334155; padding-bottom: 15px; margin-bottom: 25px; }
+        .user-info { font-size: 14px; color: #94a3b8; }
+        .user-info b { color: #38bdf8; }
+        h1 { color: #38bdf8; text-align: center; font-size: 28px; margin-bottom: 6px; }
+        .subtitle { color: #94a3b8; text-align: center; font-size: 14px; margin-bottom: 25px; }
+        textarea { width: 100%; height: 130px; background: #0f172a; border: 1.5px solid #334155; border-radius: 12px; padding: 14px; color: #fff; font-size: 14px; outline: none; transition: 0.2s; resize: vertical; }
+        textarea:focus { border-color: #38bdf8; }
+        .actions { display: flex; gap: 12px; margin-top: 15px; }
+        button { flex: 1; padding: 13px; border: none; border-radius: 10px; font-weight: 600; font-size: 14px; cursor: pointer; transition: 0.2s; }
+        .btn-check { background: linear-gradient(135deg, #0284c7, #2563eb); color: #fff; }
+        .btn-check:hover { opacity: 0.95; }
         .btn-clear { background: #334155; color: #cbd5e1; }
-        .btn-logout { background: #ef4444; color: #fff; padding: 6px 14px; border-radius: 6px; }
-        .result { display: none; margin-top: 20px; padding: 20px; border-radius: 10px; text-align: center; }
-        .scam { background: rgba(239, 68, 68, 0.15); border: 1px solid #ef4444; color: #f87171; }
-        .safe { background: rgba(34, 197, 94, 0.15); border: 1px solid #22c55e; color: #4ade80; }
+        .btn-clear:hover { background: #475569; }
+        .btn-logout { width: auto; flex: unset; background: rgba(239, 68, 68, 0.2); border: 1px solid #ef4444; color: #f87171; padding: 6px 14px; border-radius: 8px; font-size: 13px; }
+        .btn-logout:hover { background: #ef4444; color: #fff; }
+        .result { display: none; margin-top: 25px; padding: 20px; border-radius: 12px; text-align: center; }
+        .scam { background: rgba(239, 68, 68, 0.15); border: 1.5px solid #ef4444; color: #f87171; }
+        .safe { background: rgba(34, 197, 94, 0.15); border: 1.5px solid #22c55e; color: #4ade80; }
+
+        /* Floating Telegram Button (Bottom Right) */
+        .telegram-btn {
+            position: fixed;
+            bottom: 25px;
+            right: 25px;
+            background: linear-gradient(135deg, #229ED9, #0088cc);
+            color: #ffffff;
+            padding: 12px 20px;
+            border-radius: 50px;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            text-decoration: none;
+            box-shadow: 0 10px 25px rgba(34, 158, 217, 0.4);
+            font-weight: 600;
+            font-size: 14px;
+            transition: all 0.3s ease;
+            z-index: 9999;
+        }
+        .telegram-btn:hover {
+            transform: translateY(-3px) scale(1.02);
+            box-shadow: 0 15px 30px rgba(34, 158, 217, 0.6);
+        }
+        .telegram-btn svg { width: 22px; height: 22px; fill: white; }
     </style>
 </head>
 <body>
     <div class="card">
         <div class="header">
-            <div>User: <b>admin</b></div>
+            <div class="user-info">Logged in as: <b>admin</b></div>
             <button class="btn-logout" onclick="sessionStorage.clear(); window.location.href='index.html';">Logout</button>
         </div>
-        <h2 style="color: #38bdf8; text-align: center;">AI Scam Message Detector</h2>
-        <textarea id="msg" placeholder="Enter message to scan..."></textarea>
+
+        <h1>AI Scam Message Detector</h1>
+        <p class="subtitle">Real-time heuristics & pattern verification</p>
+
+        <textarea id="msg" placeholder="Paste the SMS, email, or message text here..."></textarea>
+        
         <div class="actions">
-            <button class="btn-check" onclick="scan()">Analyze</button>
-            <button class="btn-clear" onclick="document.getElementById('msg').value=''; document.getElementById('res').style.display='none';">Clear</button>
+            <button class="btn-check" onclick="scan()">Analyze Content</button>
+            <button class="btn-clear" onclick="clearForm()">Clear</button>
         </div>
+
         <div id="res" class="result">
-            <h3 id="resTitle"></h3>
-            <p id="resDesc" style="margin-top: 5px; font-size: 14px;"></p>
+            <h2 id="resTitle"></h2>
+            <p id="resDesc" style="margin-top: 8px; font-size: 14px;"></p>
         </div>
     </div>
+
+    <!-- Right Side Bottom Floating Telegram Button -->
+    <a href="https://t.me/myscam_detector_bot" target="_blank" class="telegram-btn" title="Open Telegram Bot">
+        <svg viewBox="0 0 24 24">
+            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm4.64 6.8c-.15 1.58-.8 5.42-1.13 7.19-.14.75-.42 1-.68 1.03-.58.05-1.02-.38-1.58-.75-.88-.58-1.38-.94-2.23-1.5-.99-.65-.35-1.01.22-1.59.15-.15 2.71-2.48 2.76-2.69a.2.2 0 00-.05-.18c-.06-.05-.14-.03-.21-.02-.09.02-1.49.95-4.22 2.79-.4.27-.76.41-1.08.4-.36-.01-1.04-.2-1.55-.37-.63-.2-1.12-.31-1.08-.66.02-.18.27-.36.75-.55 2.92-1.27 4.86-2.11 5.83-2.51 2.78-1.16 3.35-1.36 3.73-1.36.08 0 .27.02.39.12.1.08.13.19.14.27-.01.06.01.24 0 .37z"/>
+        </svg>
+        <span>Open Telegram Bot</span>
+    </a>
+
     <script>
         function scan() {
-            const val = document.getElementById("msg").value.toLowerCase();
+            const val = document.getElementById("msg").value.toLowerCase().trim();
             const res = document.getElementById("res");
-            if(!val) return alert("Enter message!");
+            if (!val) {
+                alert("Please enter a message to scan!");
+                return;
+            }
             res.style.display = "block";
-            if(val.includes("otp") || val.includes("bank") || val.includes("http") || val.includes("won")) {
+            const scamTriggers = ["otp", "bank", "http", "www.", "won", "lottery", "claim", "urgent", "kyc", "suspended", "password", "pin", "verify"];
+            const isScam = scamTriggers.some(word => val.includes(word));
+
+            if (isScam) {
                 res.className = "result scam";
-                document.getElementById("resTitle").innerText = "🚨 SCAM DETECTED";
-                document.getElementById("resDesc").innerText = "This message contains fraudulent keywords.";
+                document.getElementById("resTitle").innerText = "🚨 SCAM / PHISHING DETECTED";
+                document.getElementById("resDesc").innerText = "This message contains fraudulent markers, urgency, or credential requests.";
             } else {
                 res.className = "result safe";
                 document.getElementById("resTitle").innerText = "✅ SAFE MESSAGE";
-                document.getElementById("resDesc").innerText = "No malicious keywords detected.";
+                document.getElementById("resDesc").innerText = "No malicious patterns or phishing flags identified.";
             }
+        }
+
+        function clearForm() {
+            document.getElementById("msg").value = "";
+            document.getElementById("res").style.display = "none";
         }
     </script>
 </body>
