@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - AI Scam Detector</title>
+    <script>
+        // Check if user is logged in
+        if (!sessionStorage.getItem("user")) {
+            window.location.href = "index.html";
+        }
+    </script>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, sans-serif; }
+        body { background: linear-gradient(135deg, #0f172a, #1e293b); color: #f8fafc; min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 20px; }
+        .card { width: 100%; max-width: 800px; background: rgba(30, 41, 59, 0.85); backdrop-filter: blur(16px); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 20px; padding: 35px; }
+        .header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #334155; padding-bottom: 15px; margin-bottom: 20px; }
+        textarea { width: 100%; height: 130px; background: #0f172a; border: 1.5px solid #334155; border-radius: 10px; padding: 14px; color: #fff; outline: none; margin-top: 8px; }
+        .actions { display: flex; gap: 10px; margin-top: 15px; }
+        button { flex: 1; padding: 13px; border: none; border-radius: 8px; font-weight: 600; cursor: pointer; }
+        .btn-check { background: #0284c7; color: #fff; }
+        .btn-clear { background: #334155; color: #cbd5e1; }
+        .btn-logout { background: #ef4444; color: #fff; padding: 6px 14px; border-radius: 6px; }
+        .result { display: none; margin-top: 20px; padding: 20px; border-radius: 10px; text-align: center; }
+        .scam { background: rgba(239, 68, 68, 0.15); border: 1px solid #ef4444; color: #f87171; }
+        .safe { background: rgba(34, 197, 94, 0.15); border: 1px solid #22c55e; color: #4ade80; }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <div class="header">
+            <div>User: <b>admin</b></div>
+            <button class="btn-logout" onclick="sessionStorage.clear(); window.location.href='index.html';">Logout</button>
+        </div>
+        <h2 style="color: #38bdf8; text-align: center;">AI Scam Message Detector</h2>
+        <textarea id="msg" placeholder="Enter message to scan..."></textarea>
+        <div class="actions">
+            <button class="btn-check" onclick="scan()">Analyze</button>
+            <button class="btn-clear" onclick="document.getElementById('msg').value=''; document.getElementById('res').style.display='none';">Clear</button>
+        </div>
+        <div id="res" class="result">
+            <h3 id="resTitle"></h3>
+            <p id="resDesc" style="margin-top: 5px; font-size: 14px;"></p>
+        </div>
+    </div>
+    <script>
+        function scan() {
+            const val = document.getElementById("msg").value.toLowerCase();
+            const res = document.getElementById("res");
+            if(!val) return alert("Enter message!");
+            res.style.display = "block";
+            if(val.includes("otp") || val.includes("bank") || val.includes("http") || val.includes("won")) {
+                res.className = "result scam";
+                document.getElementById("resTitle").innerText = "🚨 SCAM DETECTED";
+                document.getElementById("resDesc").innerText = "This message contains fraudulent keywords.";
+            } else {
+                res.className = "result safe";
+                document.getElementById("resTitle").innerText = "✅ SAFE MESSAGE";
+                document.getElementById("resDesc").innerText = "No malicious keywords detected.";
+            }
+        }
+    </script>
+</body>
+</html>
